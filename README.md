@@ -1,4 +1,4 @@
-# VERSAUNI  
+# VERASUNI  
 Your AI-Powered College Review & Recommendation System — by the Students, for the Students  
 
 ---
