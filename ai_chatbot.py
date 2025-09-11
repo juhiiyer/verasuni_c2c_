@@ -20,9 +20,9 @@ client = OpenAI(api_key=api_key)
 def connect_db():
     return mysql.connector.connect(
         host="localhost",
-        user="chewy",
+        user="root",
         password="My gl@ss3s.",
-        database="dummy_data.db"
+        database="dummy_data"
     )
 
 # ------------------------------
