@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enhanced Verasuni Backend</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .new-feature-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .anonymous-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-switch.active {
+            background: #28a745;
+        }
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            color: #721c24;
+            background-color: #f8d7da;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
+        .response {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            margin: 15px 0;
+            border: 1px solid #dee2e6;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .status-online { background-color: #28a745; }
+        .status-offline { background-color: #dc3545; }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stats-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .category-select {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .category-btn {
+            background: #e9ecef;
+            color: #495057;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Enhanced Verasuni Backend Tester</h1>
+        <p>Test Anonymous Reviews & Web Scraping Features</p>
+        <div id="serverStatus">
+            <span class="status-indicator status-offline"></span>
+            <span>Checking enhanced server...</span>
+        </div>
+    </div>
+    
+    <!-- Enhanced Registration -->
+    <div class="container">
+        <h2>📝 Register New User</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="regFullName">Full Name *:</label>
+                <input type="text" id="regFullName" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email *:</label>
+                <input type="email" id="regEmail" required placeholder="john.doe@vit.ac.in">
+            </div>
+            <div class="form-group">
+                <label for="regPhone">Phone Number:</label>
+                <input type="tel" id="regPhone" placeholder="+919876543210">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password *:</label>
+                <input type="password" id="regPassword" required placeholder="Minimum 8 characters">
+            </div>
+            <div class="form-group">
+                <label for="regConfirmPassword">Confirm Password *:</label>
+                <input type="password" id="regConfirmPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="regStatus">User Status *:</label>
+                <select id="regStatus" required>
+                    <option value="student">Student</option>
+                    <option value="alumni">Alumni</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="parent">Parent</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="regCollege">College Name:</label>
+                <input type="text" id="regCollege" placeholder="VIT Vellore">
+            </div>
+            <button type="submit">Register User</button>
+            <button type="button" onclick="fillSampleUserData()">Fill Sample Data</button>
+        </form>
+        <div id="registerResponse"></div>
+    </div>
+
+    <!-- Enhanced Login -->
+    <div class="container">
+        <h2>🔑 User Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email *:</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password *:</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div id="loginResponse"></div>
+    </div>
+
+    <!-- NEW: Review Posting with Anonymous Option -->
+    <div class="container">
+        <h2>📝 Post Review <span class="new-feature-badge">NEW</span></h2>
+        <form id="reviewForm">
+            <div class="form-group">
+                <label for="reviewCollege">College Name *:</label>
+                <input type="text" id="reviewCollege" required placeholder="VIT Vellore">
+            </div>
+            <div class="form-group">
+                <label for="reviewContent">Review Content *:</label>
+                <textarea id="reviewContent" required placeholder="Share your honest experience..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="reviewRating">Rating (1-5):</label>
+                <input type="number" id="reviewRating" min="1" max="5" step="0.1" placeholder="4.0">
+            </div>
+            <div class="form-group">
+                <label for="reviewCategory">Category:</label>
+                <select id="reviewCategory">
+                    <option value="overall">Overall Experience</option>
+                    <option value="academics">Academics</option>
+                    <option value="campus_life">Campus Life</option>
+                    <option value="placements">Placements</option>
+                    <option value="facilities">Facilities</option>
+                    <option value="food">Food</option>
+                    <option value="hostel">Hostel</option>
+                    <option value="faculty">Faculty</option>
+                </select>
+            </div>
+            <div class="anonymous-toggle">
+                <label>Post Anonymously:</label>
+                <div class="toggle-switch" id="anonymousToggle" onclick="toggleAnonymous()">
+                    <div class="toggle-slider"></div>
+                </div>
+                <span id="anonymousStatus">Show my identity</span>
+            </div>
+            <button type="submit">Post Review</button>
+            <button type="button" onclick="fillSampleReview()">Fill Sample Review</button>
+        </form>
+        <div id="reviewResponse"></div>
+    </div>
+
+    <!-- Enhanced Review Viewing -->
+    <div class="container">
+        <h2>📖 View Reviews <span class="new-feature-badge">Enhanced</span></h2>
+        <div class="form-group">
+            <label for="searchCollege">Search College:</label>
+            <input type="text" id="searchCollege" placeholder="VIT Vellore">
+        </div>
+        <div class="category-select">
+            <button class="category-btn active" onclick="filterByCategory('all')">All</button>
+            <button class="category-btn" onclick="filterByCategory('overall')">Overall</button>
+            <button class="category-btn" onclick="filterByCategory('academics')">Academics</button>
+            <button class="category-btn" onclick="filterByCategory('campus_life')">Campus Life</button>
+            <button class="category-btn" onclick="filterByCategory('placements')">Placements</button>
+            <button class="category-btn" onclick="filterByCategory('facilities')">Facilities</button>
+        </div>
+        <button onclick="getReviews()">Get Reviews</button>
+        <button onclick="getCollegeStats()">Get College Stats</button>
+        <div id="reviewsResponse"></div>
+    </div>
+
+    <!-- College Statistics -->
+    <div class="container">
+        <h2>📊 College Analytics <span class="new-feature-badge">NEW</span></h2>
+        <button onclick="getColleges()">List All Colleges</button>
+        <button onclick="triggerScraping()">Manual Web Scraping</button>
+        <div class="feature-grid" id="statsGrid">
+            <!-- Stats cards will be populated here -->
+        </div>
+        <div id="analyticsResponse"></div>
+    </div>
+
+    <!-- User Profile & Admin -->
+    <div class="container">
+        <h2>👤 Profile & Admin</h2>
+        <button onclick="getProfile()">Get My Profile</button>
+        <button onclick="getMyReviews()">My Reviews</button>
+        <button onclick="getAllUsers()">All Users (Admin)</button>
+        <button onclick="getAllReviews()">All Reviews (Admin)</button>
+        <div id="profileResponse"></div>
+    </div>
+
+    <!-- Test Results Summary -->
+    <div class="container">
+        <h2>🧪 Enhanced Test Results</h2>
+        <div id="testSummary">
+            <p>Run tests above to see enhanced results...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        let currentToken = null;
+        let isAnonymous = false;
+        let currentCategory = 'all';
+        
+        let testResults = {
+            serverHealth: '❓ Not tested',
+            registration: '❓ Not tested',
+            login: '❓ Not tested',
+            reviewPosting: '❓ Not tested',
+            webScraping: '❓ Not tested'
+        };
+
+        // Check server status on load
+        window.addEventListener('load', function() {
+            testServerHealth();
+        });
+
+        function updateTestSummary() {
+            const summary = document.getElementById('testSummary');
+            summary.innerHTML = `
+                <h4>Enhanced Test Status:</h4>
+                <p><strong>Server Health:</strong> ${testResults.serverHealth}</p>
+                <p><strong>Registration:</strong> ${testResults.registration}</p>
+                <p><strong>Login:</strong> ${testResults.login}</p>
+                <p><strong>Review Posting:</strong> ${testResults.reviewPosting}</p>
+                <p><strong>Web Scraping:</strong> ${testResults.webScraping}</p>
+            `;
+        }
+
+        async function testServerHealth() {
+            try {
+                const response = await fetch(`${API_BASE}`, {method: 'GET', mode: 'cors'});
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById('serverStatus').innerHTML = 
+                        '<span class="status-indicator status-online"></span><span>Enhanced Server Online ✅</span>';
+                    testResults.serverHealth = '✅ Online';
+                    
+                    // Check for new features
+                    if (result.features && result.features.includes('Anonymous Reviews')) {
+                        console.log('✅ Anonymous Reviews feature detected');
+                    }
+                    if (result.features && result.features.includes('Web Scraping Fallback')) {
+                        console.log('✅ Web Scraping feature detected');
+                    }
+                } else {
+                    document.getElementById('serverStatus').innerHTML = 
+                        '<span class="status-indicator status-offline"></span><span>Server Error ❌</span>';
+                    testResults.serverHealth = '❌ Error';
+                }
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = 
+                    '<span class="status-indicator status-offline"></span><span>Server Offline ❌</span>';
+                testResults.serverHealth = '❌ Offline';
+            }
+            updateTestSummary();
+        }
+
+        // Anonymous Toggle
+        function toggleAnonymous() {
+            isAnonymous = !isAnonymous;
+            const toggle = document.getElementById('anonymousToggle');
+            const status = document.getElementById('anonymousStatus');
+            
+            if (isAnonymous) {
+                toggle.classList.add('active');
+                status.textContent = 'Anonymous posting';
+            } else {
+                toggle.classList.remove('active');
+                status.textContent = 'Show my identity';
+            }
+        }
+
+        // Registration (same as before)
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                full_name: document.getElementById('regFullName').value,
+                email: document.getElementById('regEmail').value,
+                phone_number: document.getElementById('regPhone').value,
+                password: document.getElementById('regPassword').value,
+                confirm_password: document.getElementById('regConfirmPassword').value,
+                user_status: document.getElementById('regStatus').value,
+                college_name: document.getElementById('regCollege').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    mode: 'cors',
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    currentToken = result.token;
+                    document.getElementById('registerResponse').innerHTML = 
+                        `<div class="success">✅ Registration Successful!</div>
+                         <div class="response">User: ${result.user.full_name}
+Email: ${result.user.email}
+Status: ${result.user.user_status}
+Profile: ${result.user.profile_completion}% complete</div>`;
+                    
+                    testResults.registration = '✅ Success';
+                    
+                    // Auto-fill login
+                    document.getElementById('loginEmail').value = formData.email;
+                    document.getElementById('loginPassword').value = formData.password;
+                    
+                } else {
+                    document.getElementById('registerResponse').innerHTML = 
+                        `<div class="error">❌ Registration Failed: ${result.error}</div>`;
+                    testResults.registration = '❌ Failed';
+                }
+            } catch (error) {
+                document.getElementById('registerResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+                testResults.registration = '❌ Network Error';
+            }
+            updateTestSummary();
+        });
+
+        // Login (same as before)
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    mode: 'cors',
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    currentToken = result.token;
+                    document.getElementById('loginResponse').innerHTML = 
+                        `<div class="success">✅ Login Successful!</div>
+                         <div class="response">Welcome ${result.user.full_name}!
+Status: ${result.user.user_status}
+Profile: ${result.user.profile_completion}% complete</div>`;
+                    
+                    testResults.login = '✅ Success';
+                } else {
+                    document.getElementById('loginResponse').innerHTML = 
+                        `<div class="error">❌ Login Failed: ${result.error}</div>`;
+                    testResults.login = '❌ Failed';
+                }
+            } catch (error) {
+                document.getElementById('loginResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+                testResults.login = '❌ Network Error';
+            }
+            updateTestSummary();
+        });
+
+        // NEW: Review Posting with Anonymous Option
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentToken) {
+                document.getElementById('reviewResponse').innerHTML = 
+                    '<div class="error">❌ Please login first to post a review</div>';
+                return;
+            }
+
+            const formData = {
+                content: document.getElementById('reviewContent').value,
+                college_name: document.getElementById('reviewCollege').value,
+                rating: parseFloat(document.getElementById('reviewRating').value) || null,
+                category: document.getElementById('reviewCategory').value,
+                is_anonymous: isAnonymous  // NEW: Anonymous flag
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    mode: 'cors',
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('reviewResponse').innerHTML = 
+                        `<div class="success">✅ Review Posted Successfully!</div>
+                         <div class="response">Review ID: ${result.review.review_id}
+College: ${result.review.college_name}
+Category: ${result.review.category}
+Anonymous: ${result.review.is_anonymous ? 'Yes' : 'No'}
+${result.info ? `\n🕷️ ${result.info}` : ''}</div>`;
+                    
+                    testResults.reviewPosting = '✅ Success';
+                    
+                    // Auto-fill search
+                    document.getElementById('searchCollege').value = formData.college_name;
+                    
+                } else {
+                    document.getElementById('reviewResponse').innerHTML = 
+                        `<div class="error">❌ Review Posting Failed: ${result.error}</div>`;
+                    testResults.reviewPosting = '❌ Failed';
+                }
+            } catch (error) {
+                document.getElementById('reviewResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+                testResults.reviewPosting = '❌ Network Error';
+            }
+            updateTestSummary();
+        });
+
+        // Get Reviews with Category Filter
+        async function getReviews() {
+            const collegeName = document.getElementById('searchCollege').value;
+            if (!collegeName) {
+                document.getElementById('reviewsResponse').innerHTML = 
+                    '<div class="error">❌ Please enter a college name</div>';
+                return;
+            }
+
+            try {
+                let url = `${API_BASE}/api/reviews/${encodeURIComponent(collegeName)}`;
+                if (currentCategory !== 'all') {
+                    url += `?category=${currentCategory}`;
+                }
+
+                const response = await fetch(url, {method: 'GET', mode: 'cors'});
+                const result = await response.json();
+                
+                if (response.ok) {
+                    let reviewsHtml = `<div class="success">✅ Found ${result.total_count} reviews for ${collegeName}</div>`;
+                    reviewsHtml += '<div class="response">';
+                    
+                    result.reviews.forEach((review, index) => {
+                        reviewsHtml += `Review ${index + 1}:
+Author: ${review.author}
+Anonymous: ${review.is_anonymous ? 'Yes' : 'No'}
+Category: ${review.category}
+Rating: ${review.rating || 'N/A'}/5
+Source: ${review.source}
+Content: ${review.content}
+Date: ${new Date(review.created_at).toLocaleDateString()}
+
+---
+
+`;
+                    });
+                    
+                    reviewsHtml += '</div>';
+                    document.getElementById('reviewsResponse').innerHTML = reviewsHtml;
+                } else {
+                    document.getElementById('reviewsResponse').innerHTML = 
+                        `<div class="error">❌ Failed to get reviews: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('reviewsResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+
+        // Get College Statistics
+        async function getCollegeStats() {
+            const collegeName = document.getElementById('searchCollege').value;
+            if (!collegeName) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/colleges/${encodeURIComponent(collegeName)}/stats`, {
+                    method: 'GET', mode: 'cors'
+                });
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const stats = result.statistics;
+                    const statsHtml = `
+                        <div class="stats-card">
+                            <div class="stats-number">${stats.total_reviews}</div>
+                            <div>Total Reviews</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number">${stats.average_rating || 'N/A'}</div>
+                            <div>Average Rating</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number">${stats.user_generated_reviews}</div>
+                            <div>User Reviews</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number">${stats.official_reviews}</div>
+                            <div>Official Reviews</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number">${stats.anonymous_reviews}</div>
+                            <div>Anonymous Reviews</div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('statsGrid').innerHTML = statsHtml;
+                    
+                    if (result.data_sources.recently_scraped) {
+                        testResults.webScraping = '✅ Active';
+                        updateTestSummary();
+                    }
+                } else {
+                    document.getElementById('analyticsResponse').innerHTML = 
+                        `<div class="error">❌ Failed to get stats: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('analyticsResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+
+        // Manual Web Scraping Trigger
+        async function triggerScraping() {
+            const collegeName = document.getElementById('searchCollege').value || 'VIT Vellore';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/scrape-reviews`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    mode: 'cors',
+                    body: JSON.stringify({college_name: collegeName})
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('analyticsResponse').innerHTML = 
+                        `<div class="success">✅ ${result.message}</div>
+                         <div class="response">Added: ${result.added_count} reviews
+College: ${result.college_name}</div>`;
+                    
+                    testResults.webScraping = '✅ Success';
+                } else {
+                    document.getElementById('analyticsResponse').innerHTML = 
+                        `<div class="error">❌ Scraping Failed: ${result.error}</div>`;
+                    testResults.webScraping = '❌ Failed';
+                }
+            } catch (error) {
+                document.getElementById('analyticsResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+                testResults.webScraping = '❌ Network Error';
+            }
+            updateTestSummary();
+        }
+
+        // Category Filter
+        function filterByCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Get My Reviews
+        async function getMyReviews() {
+            if (!currentToken) {
+                document.getElementById('profileResponse').innerHTML = 
+                    '<div class="error">❌ Please login first</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/user/reviews`, {
+                    method: 'GET',
+                    headers: {'Authorization': `Bearer ${currentToken}`},
+                    mode: 'cors'
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="success">✅ Your Reviews Retrieved (${result.total_count})</div>
+                         <div class="response">${JSON.stringify(result, null, 2)}</div>`;
+                } else {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('profileResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+
+        // Get All Colleges
+        async function getColleges() {
+            try {
+                const response = await fetch(`${API_BASE}/api/colleges`, {method: 'GET', mode: 'cors'});
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('analyticsResponse').innerHTML = 
+                        `<div class="success">✅ Found ${result.total_colleges} colleges</div>
+                         <div class="response">${JSON.stringify(result, null, 2)}</div>`;
+                } else {
+                    document.getElementById('analyticsResponse').innerHTML = 
+                        `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('analyticsResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+
+        // Existing functions (getProfile, getAllUsers, etc.) remain the same...
+        async function getProfile() {
+            if (!currentToken) {
+                document.getElementById('profileResponse').innerHTML = 
+                    '<div class="error">❌ Please login first</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/user/profile`, {
+                    method: 'GET',
+                    headers: {'Authorization': `Bearer ${currentToken}`},
+                    mode: 'cors'
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="success">✅ Profile Retrieved!</div>
+                         <div class="response">${JSON.stringify(result, null, 2)}</div>`;
+                } else {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('profileResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+
+        async function getAllUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users`, {method: 'GET', mode: 'cors'});
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="success">✅ All Users Retrieved!</div>
+                         <div class="response">${JSON.stringify(result, null, 2)}</div>`;
+                } else {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('profileResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+
+        async function getAllReviews() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/reviews`, {method: 'GET', mode: 'cors'});
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="success">✅ All Reviews Retrieved!</div>
+                         <div class="response">${JSON.stringify(result, null, 2)}</div>`;
+                } else {
+                    document.getElementById('profileResponse').innerHTML = 
+                        `<div class="error">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('profileResponse').innerHTML = 
+                    `<div class="error">❌ Network Error: ${error.message}</div>`;
+            }
+        }
+
+        // Sample Data Functions
+        function fillSampleUserData() {
+            const timestamp = Date.now();
+            document.getElementById('regFullName').value = 'Test User';
+            document.getElementById('regEmail').value = `testuser${timestamp}@vit.ac.in`;
+            document.getElementById('regPhone').value = '+919876543210';
+            document.getElementById('regPassword').value = 'password123';
+            document.getElementById('regConfirmPassword').value = 'password123';
+            document.getElementById('regCollege').value = 'VIT Vellore';
+        }
+
+        function fillSampleReview() {
+            document.getElementById('reviewCollege').value = 'VIT Vellore';
+            document.getElementById('reviewContent').value = 'Great college with good placement opportunities. The faculty is experienced and campus infrastructure is well-maintained.';
+            document.getElementById('reviewRating').value = '4.2';
+            document.getElementById('reviewCategory').value = 'overall';
+        }
+    </script>
+</body>
+</html>
