@@ -1,0 +1,23 @@
+# Verasuni Backend Requirements
+# Install with: pip install -r requirements.txt
+
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-CORS==4.0.0
+Werkzeug==2.3.7
+PyJWT==2.8.0
+google-auth==2.23.3
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.1.1
+requests==2.31.0
+python-dotenv==1.0.0
+email-validator==2.0.0
+phonenumbers==8.13.22
+Pillow==10.0.1
+python-multipart==0.0.6
+
+# For production (PostgreSQL)
+# psycopg2-binary==2.9.7
+
+# For development
+# python-decouple==3.8
