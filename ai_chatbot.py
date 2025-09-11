@@ -4,9 +4,7 @@ from openai import OpenAI
 import mysql.connector
 import os
 
-# ------------------------------
-# Load API Key from Environment
-# ------------------------------
+
 api_key = os.getenv("OPENAI_API_KEY")
 api_secret = os.getenv("OPENAI_API_SECRET")
 if not api_key:
@@ -14,9 +12,7 @@ if not api_key:
 
 client = OpenAI(api_key=api_key)
 
-# ------------------------------
-# Connect to MySQL Database
-# ------------------------------
+
 def connect_db():
     return mysql.connector.connect(
         host="localhost",
@@ -25,9 +21,7 @@ def connect_db():
         database="dummy_data"
     )
 
-# ------------------------------
-# Query College Database
-# ------------------------------
+
 def query_database(user_query):
     db = connect_db()
     cursor = db.cursor(dictionary=True)
@@ -39,9 +33,7 @@ def query_database(user_query):
     db.close()
     return results
 
-# ------------------------------
-# Categorize User Query
-# ------------------------------
+
 def categorize_query(query):
     query_lower = query.lower()
     categories = {
@@ -59,9 +51,7 @@ def categorize_query(query):
             return category
     return "general"
 
-# ------------------------------
-# Log User Interactions
-# ------------------------------
+
 def log_user_interaction(user_id, query):
     category = categorize_query(query)
     db = connect_db()
@@ -72,9 +62,7 @@ def log_user_interaction(user_id, query):
     cursor.close()
     db.close()
 
-# ------------------------------
-# Get GPT-4 Response
-# ------------------------------
+
 def get_gpt4_response(user_query, db_results=None):
     context = "You are Bibble, a friendly AI assistant that helps students with college-related queries."
     if db_results:
@@ -92,9 +80,7 @@ def get_gpt4_response(user_query, db_results=None):
     except Exception as e:
         return f"⚠️ Sorry, something went wrong: {e}"
 
-# ------------------------------
-# Sample Questions
-# ------------------------------
+
 sample_questions = [
     "Can you generate a personalized comparison table of Hostel, Food, and Placements for XYZ College vs ABC College?",
     "Regenerate the table but sort the ratings by faculty quality first.",
@@ -110,9 +96,7 @@ sample_questions = [
 
 user_logs_memory = []
 
-# ------------------------------
-# Suggest Personalized Questions
-# ------------------------------
+
 def suggest_personalized_questions():
     if not user_logs_memory:
         return None
@@ -124,9 +108,7 @@ def suggest_personalized_questions():
     related = [q for q in sample_questions if most_common in q.lower()]
     return random.sample(related, min(2, len(related))) if related else None
 
-# ------------------------------
-# Analyze User Interests
-# ------------------------------
+
 def analyze_user_interests():
     if not user_logs_memory:
         return None
@@ -137,9 +119,7 @@ def analyze_user_interests():
     common = Counter(keywords).most_common(3)
     return [word for word, _ in common]
 
-# ------------------------------
-# Main Chatbot Function
-# ------------------------------
+
 def bibble_chat(user_id="guest"):
     print("Hi, I’m Bibble, your personal AI ChatBot.")
     print("I'm going to assist you with any queries or tasks you have for me.\n")
