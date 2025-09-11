@@ -18,11 +18,22 @@ def connect_db():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="My gl@ss3s.",
+        password="",
         database="dummy_data"
     )
 
+def query_database(user_query):
+    db = connect_db()
+    cursor = db.cursor(dictionary=True)
+    sql = "SELECT * FROM colleges WHERE name LIKE %s LIMIT 5"
+    val = (f"%{user_query}%", )
+    cursor.execute(sql, val)
+    results = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return results
 
+'''
 def query_database(user_query):
     db = connect_db()
     cursor = db.cursor(dictionary=True)
@@ -33,7 +44,7 @@ def query_database(user_query):
     cursor.close()
     db.close()
     return results
-
+'''
 
 def categorize_query(query):
     query_lower = query.lower()
@@ -53,15 +64,6 @@ def categorize_query(query):
     return "general"
 
 
-def log_user_interaction(user_id, query):
-    category = categorize_query(query)
-    db = connect_db()
-    cursor = db.cursor()
-    sql = "INSERT INTO user_logs (user_id, query, category) VALUES (%s, %s, %s)"
-    cursor.execute(sql, (user_id, query, category))
-    db.commit()
-    cursor.close()
-    db.close()
 
 
 # --- GEMINI RESPONSE FUNCTION ---
@@ -79,42 +81,23 @@ def get_gemini_response(user_query, db_results=None):
 # ----------------------------------
 
 sample_questions = [
-    "Can you generate a personalized comparison table of Hostel, Food, and Placements for XYZ College vs ABC College?",
-    "Regenerate the table but sort the ratings by faculty quality first.",
-    "Make me a downloadable Excel sheet of all Engineering colleges in Bangalore with their rankings.",
-    "Summarize alumni reviews of Delhi University into a short paragraph.",
-    "Compare the placement statistics of IIT Delhi and BITS Pilani.",
-    "Which colleges in Mumbai have the best hostel facilities?",
-    "Generate a chart of top 10 engineering colleges in India based on NIRF ranking.",
-    "Give me a list of colleges in Chennai with good infrastructure and faculty reviews.",
-    "Prepare a text summary of Computer Science programs across 3 colleges.",
-    "Make me a CSV file of law colleges in Delhi with their admission fees."
+    "Can you generate a personalized comparison table of Hostel, Food, and Placements for College1 vs. College2?",
+    "Make me a downloadable Excel sheet of the pros and cons of the food and hostel life there.",
+    "Which college has the best student facilities and why?",
+    "Make me a CSV file of colleges with their admission fees.",
+    "Which college would be more suited for a social butterfly. ",
+    "Which college would pay more attention to the academics and hostel life?",
+    "Summarize campus life reviews of College1 into a short paragraph.",
+    "which college has the better campus?",
+    "which college's facilities are more suited for athletics?",
+    "compare the college's infrastructures in detail. "
 ]
 
-user_logs_memory = []
 
 
-def suggest_personalized_questions():
-    if not user_logs_memory:
-        return None
-    words = " ".join(user_logs_memory).lower().split()
-    keywords = [w for w in words if w not in {"the", "of", "in", "a", "to", "and"}]
-    if not keywords:
-        return None
-    most_common = Counter(keywords).most_common(1)[0][0]
-    related = [q for q in sample_questions if most_common in q.lower()]
-    return random.sample(related, min(2, len(related))) if related else None
 
 
-def analyze_user_interests():
-    if not user_logs_memory:
-        return None
-    words = " ".join(user_logs_memory).lower().split()
-    keywords = [w for w in words if w not in {"the", "of", "in", "a", "to", "and", "me", "my", "you"}]
-    if not keywords:
-        return None
-    common = Counter(keywords).most_common(3)
-    return [word for word, _ in common]
+
 
 
 def bibble_chat(user_id="guest"):
@@ -123,11 +106,6 @@ def bibble_chat(user_id="guest"):
 
     choice = input("Do you want sample questions you can ask me? (yes/no): ").strip().lower()
     if choice == "yes":
-        personalized = suggest_personalized_questions()
-        if personalized:
-            print("\nBased on your interests, you might like:")
-            for i, q in enumerate(personalized, 1):
-                print(f"{i}. {q}")
         examples = random.sample(sample_questions, 4)
         print("\nHere are some other things you can try asking me:")
         for i, q in enumerate(examples, 1):
@@ -141,8 +119,7 @@ def bibble_chat(user_id="guest"):
             print("Bibble: Thanks for chatting! Goodbye 👋")
             break
 
-        user_logs_memory.append(user_query)
-        log_user_interaction(user_id, user_query)
+
 
         db_results = query_database(user_query)
 
@@ -150,11 +127,7 @@ def bibble_chat(user_id="guest"):
         answer = get_gemini_response(user_query, db_results)
         print(f"Bibble: {answer}")
 
-        if len(user_logs_memory) % 3 == 0:
-            interests = analyze_user_interests()
-            if interests:
-                print(f"\n📊 Bibble Insight: I noticed you’ve been asking a lot about {', '.join(interests)}.")
-                print("Would you like me to prepare a summary or comparison based on that?")
+
 
 
 if __name__ == "__main__":
